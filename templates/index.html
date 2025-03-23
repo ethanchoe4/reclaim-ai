@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reclaim AI</title>
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <!-- External CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background-color: #500000;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .logo {
+            max-width: 225px;
+            margin: 20px auto 10px;
+        }
+
+        .map-section {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 20px 0;
+        }
+
+        .map-block {
+            text-align: center;
+        }
+
+        .maps {
+            max-width: 300px;
+            border: 2px solid #dddddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease, filter 0.3s ease;
+            cursor: pointer;
+        }
+
+        .maps:hover {
+            filter: brightness(1.08);
+            transform: scale(1.03);
+        }
+
+        .map-label {
+            margin-top: 8px;
+            font-size: 14px;
+            color: #f0f0f0;
+            font-weight: bold;
+        }
+
+        form input[type="text"],
+        form input[type="file"],
+        form input[type="submit"] {
+            margin: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+            font-size: 14px;
+        }
+
+        form input[type="submit"] {
+            background-color: #800000;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        form input[type="submit"]:hover {
+            background-color: #a83232;
+        }
+
+        .top-matches-heading {
+            font-size: 26px;
+            font-weight: 600;
+            margin: 40px 0 20px;
+            color: #ffffff;
+        }
+
+        .results-row {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .result-block {
+            text-align: center;
+            width: 200px;
+        }
+
+        .result-img {
+            max-width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            transition: transform 0.2s ease;
+        }
+
+        .result-img:hover {
+            transform: scale(1.02);
+        }
+
+        .pickup-location {
+            margin-top: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #800000;
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .image-slot {
+            display: inline-block;
+            width: 200px;
+            height: 200px;
+            background-color: #5a1a1a;
+            border: 2px dashed #999;
+            border-radius: 8px;
+            vertical-align: middle;
+            position: relative;
+        }
+
+        .image-slot span {
+            position: absolute;
+            width: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ccc;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .info-box {
+            margin-top: 50px;
+            padding: 20px;
+            background-color: #ffffff11;
+            border: 1px solid white;
+            border-radius: 10px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Logo -->
+    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Reclaim AI Logo" class="logo">
+
+    <!-- Maps -->
+    <section class="map-section">
+        <div class="map-block">
+            <a href="https://aggiemap.tamu.edu/?bldg=0454" target="_blank" rel="noopener noreferrer">
+                <img src="{{ url_for('static', filename='images/msc.jpeg') }}" alt="MSC Map" class="maps">
+            </a>
+            <div class="map-label">Memorial Student Center</div>
+        </div>
+        <div class="map-block">
+            <a href="https://aggiemap.tamu.edu/?bldg=0518" target="_blank" rel="noopener noreferrer">
+                <img src="{{ url_for('static', filename='images/zachry.jpeg') }}" alt="Zachry Map" class="maps">
+            </a>
+            <div class="map-label">Zachry Engineering Education Complex</div>
+        </div>
+    </section>
+
+    <!-- Search Form -->
+    <form method="POST" enctype="multipart/form-data">
+        <input type="text" name="description" placeholder="Describe your lost item..." style="width: 300px;">
+        <br><br>
+        <label for="fileUpload" style="display: inline-block; padding: 10px 15px; background-color: white; color: #500000; font-weight: bold; border-radius: 6px; cursor: pointer;">
+            Upload Image
+        </label>
+        <input id="fileUpload" type="file" name="image" accept="image/*" style="display: none;">
+        <br><br>
+        <input type="submit" value="Search">
+    </form>
+
+    <!-- Top Matches -->
+    <div class="top-matches-heading">Top Matches</div>
+    <div class="results-row">
+        {% set slots = result_images if result_images is defined else [] %}
+        {% for i in range(5) %}
+            <div class="result-block">
+                {% if i < slots|length %}
+                    <img src="{{ url_for('static', filename=slots[i].filename) }}" alt="Match {{ i+1 }}" class="result-img">
+                    <div class="pickup-location">{{ slots[i].location }}</div>
+                {% else %}
+                    <div class="image-slot">
+                        <span>Slot {{ i+1 }}</span>
+                    </div>
+                    <div class="pickup-location" style="visibility: hidden;">&nbsp;</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Info Box -->
+    <div class="info-box">
+        Search for your lost items by entering a brief description or uploading an image.
+        Recovered items can be claimed at the Lost and Found office in the Memorial Student Center (MSC, Suite 2240), or at ZACH 397 for items lost in the Zachry Engineering Building.
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv/
+env/
+venv/
+*.sqlite3
+.DS_Store
+
+# Flask
+instance/
+*.db
+
+# VSCode or PyCharm
+.vscode/
+.idea/
+
+# Images and cache
+static/results/
+static/uploads/
+image_embeddings.*
+image_paths.*
+items.faiss
+*.pkl
+*.npy
+
+# OS junk
+Thumbs.db
