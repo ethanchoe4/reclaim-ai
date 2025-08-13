@@ -69,8 +69,3 @@ def match_image_to_s3(input_image):
         }
     else:
         return {"message": "No match found"}
-
-# 🧪 Usage Example:
-# uploaded_image = Image.open("uploads/test_watch.jpg")
-# result = match_image_to_s3(uploaded_image)
-# print("Best Match URL:", result["url"])
